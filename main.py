@@ -1,5 +1,10 @@
 from string import ascii_lowercase
 from random import random, choice
+from math import exp
+
+
+def sigmoid(x):
+    return 1.0 / (1.0 + exp(-x))
 
 
 def randomkey(length):
@@ -65,7 +70,7 @@ class InputNeuron(Neuron):
             neuron.data = data  # 입력뉴런 데이터 초기화
 
     @classmethod
-    def work(cls): # 모든 입력 뉴런 데이터 전달
+    def work(cls):  # 모든 입력 뉴런 데이터 전달
         for neuron in cls.all_neuron:
             neuron.go_next()
 
