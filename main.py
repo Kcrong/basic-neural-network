@@ -89,9 +89,20 @@ class OutputNeuron(Neuron):
         for neuron in cls.all_neuron:
             neuron.data = None
 
-    @classmethod
-    def get_result(cls):  # OutputNeuron 에서 역치값 보다 크면 true, 아니면 false 반환
-        return max(cls.all_neuron, key=lambda x: x.data)
+    def get_result(self):  # OutputNeuron 에서 역치값 보다 크면 true, 아니면 false 반환
+        # return max(cls.all_neuron, key=lambda x: x.data)
+        return self.data >= self.threshold
+    """
+        1) return self.data >= self.threshold
+
+        2)
+        if self.data >= self.threshold:
+            return True
+        else:
+            return False
+
+        (1) 과 (2) 는 같은 결과를 반환한다.
+    """
 
     def __repr__(self):
         return "<OutputNeuron %s>" % self.name
@@ -103,13 +114,12 @@ if __name__ == '__main__':
     # Two Input Neuron (0, 1)
     # Two Output Neuron (0, 1)
     input_neuron_list = [InputNeuron() for i in range(2)]
-    output_neuron_list = [OutputNeuron(i) for i in [0, 1]]
+    output_neuron = OutputNeuron()
 
     # Link All Neuron
     for input_neuron in input_neuron_list:
-        for output_neuron in output_neuron_list:
-            # Set Random weight of links
-            input_neuron.link_neuron(output_neuron)
+        # Set Random weight of links
+        input_neuron.link_neuron(output_neuron)
 
     inputdata = [  # 입력할 데이터 생성
         [0, 0],
@@ -121,5 +131,5 @@ if __name__ == '__main__':
     for data in inputdata:
         InputNeuron.set_init_data(data)  # 입력뉴런에 데이터 설정
         InputNeuron.work()  # 다음 뉴런으로 데이터 전달
-        result = OutputNeuron.get_result()  # 출력 뉴런 중에 가장 큰 뉴런 결과로 가져옴
+        result = output_neuron.get_result()  # Output 뉴런의 신호 출력 여부를 출력
         print(data, result)  # 결과 출력
