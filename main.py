@@ -91,7 +91,8 @@ class OutputNeuron(Neuron):
 
     def get_result(self):  # OutputNeuron 에서 역치값 보다 크면 true, 아니면 false 반환
         # return max(cls.all_neuron, key=lambda x: x.data)
-        return self.data >= self.threshold
+        # return self.data >= self.threshold
+        return sigmoid(self.data)
     """
         1) return self.data >= self.threshold
 
