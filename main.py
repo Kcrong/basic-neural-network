@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from random import random, choice
+from random import uniform, choice
 from math import exp
 
 
@@ -28,8 +28,10 @@ class Neuron:
         :param weight: 연결할 뉴런과의 가중치
         """
         self._next.append(next_neuron)
+
         if not weight:
-            weight = random()
+            weight = uniform(-1, 1)  # 가중치를 -1 과 1 사이 float 값으로 설정
+
         self._weight[next_neuron] = weight
 
     def __repr__(self):
@@ -88,7 +90,7 @@ class OutputNeuron(Neuron):
             neuron.data = None
 
     @classmethod
-    def get_result(cls):  # OutputNeuron 중에 가장 데이터가 큰 Neuron 을 반환
+    def get_result(cls):  # OutputNeuron 에서 역치값 보다 크면 true, 아니면 false 반환
         return max(cls.all_neuron, key=lambda x: x.data)
 
     def __repr__(self):
