@@ -21,6 +21,8 @@ class Neuron:
         if name is None:
             name = randomkey(5)
         self.name = name  # 식별을 위한 이름 설정
+        self.alpha = None  # 민감도 상수
+        self._error = list()  # 에러 누적 리스트
 
     def link_neuron(self, next_neuron, weight=None):
         """
@@ -109,6 +111,13 @@ class OutputNeuron(Neuron):
         return "<OutputNeuron %s>" % self.name
 
 
+def get_result(init_data):
+    InputNeuron.set_init_data(init_data)  # 입력 뉴런에 데이터 설정
+    InputNeuron.work()  # 다음 뉴런으로 데이터 전달
+
+    return output_neuron.get_result()  # 결과 반환
+
+
 if __name__ == '__main__':
 
     # Make Neuron Object list
@@ -130,7 +139,5 @@ if __name__ == '__main__':
     ]
 
     for data in inputdata:
-        InputNeuron.set_init_data(data)  # 입력뉴런에 데이터 설정
-        InputNeuron.work()  # 다음 뉴런으로 데이터 전달
-        result = output_neuron.get_result()  # Output 뉴런의 신호 출력 여부를 출력
-        print(data, result)  # 결과 출력
+        result = get_result(data)
+        print(data, result)
