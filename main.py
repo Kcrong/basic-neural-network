@@ -12,6 +12,9 @@ def randomkey(length):
 
 
 class Neuron:
+    alpha = None  # 민감도 상수
+    error = list()  # 에러 누적 리스트
+
     def __init__(self, name):
         # Private Var
         self._next = list()  # 연결된 다음 뉴런을 저장할 list 변수
@@ -21,8 +24,6 @@ class Neuron:
         if name is None:
             name = randomkey(5)
         self.name = name  # 식별을 위한 이름 설정
-        self.alpha = None  # 민감도 상수
-        self._error = list()  # 에러 누적 리스트
 
     def link_neuron(self, next_neuron, weight=None):
         """
@@ -95,6 +96,7 @@ class OutputNeuron(Neuron):
         # return max(cls.all_neuron, key=lambda x: x.data)
         # return self.data >= self.threshold
         return sigmoid(self.data)
+
     """
         1) return self.data >= self.threshold
 
