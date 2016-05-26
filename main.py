@@ -12,6 +12,7 @@ class Neuron:
         self._next = list()
         self._weight = dict()
         self.data = None
+        self.threshold = 0
         if name is None:
             name = randomkey(5)
         self.name = name
@@ -26,13 +27,16 @@ class Neuron:
         return "<Neuron %s>" % self.data
 
     def go_next(self):
-        for next_neuron in self._next:
-            next_data = self.data * self._weight[next_neuron]
+        if self.data >= self.threshold:
+            for next_neuron in self._next:
+                next_data = self.data * self._weight[next_neuron]
 
-            if next_neuron.data:
-                next_neuron.data += next_data
-            else:
-                next_neuron.data = next_data
+                if next_neuron.data:
+                    next_neuron.data += next_data
+                else:
+                    next_neuron.data = next_data
+        else:
+            pass
 
 
 class InputNeuron(Neuron):
