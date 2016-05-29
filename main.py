@@ -12,13 +12,13 @@ def randomkey(length):
 
 
 class Neuron:
-    alpha = None  # 민감도 상수
-    error = list()  # 에러 누적 리스트
+    alpha = 0.1  # 민감도 상수
+    error = list()  # 에러 누적 dict
 
     def __init__(self, name):
         # Private Var
-        self._next = list()  # 연결된 다음 뉴런을 저장할 list 변수
-        self._weight = dict()  # 가중치 dict 변수
+        self.next = None  # 연결된 다음 뉴런을 저장할 list 변수
+        self.weight = None  # 가중치 dict 변수
         self.data = None  # 이 뉴런의 데이터 합을 저장할 변수
         self.threshold = 0  # 역치값 (여기선 0으로 설정)
         if name is None:
@@ -30,27 +30,45 @@ class Neuron:
         :param next_neuron: 연결할 뉴런
         :param weight: 연결할 뉴런과의 가중치
         """
-        self._next.append(next_neuron)
+        self.next = next_neuron
 
         if not weight:
             weight = uniform(-1, 1)  # 가중치를 -1 과 1 사이 float 값으로 설정
 
-        self._weight[next_neuron] = weight
+        self.weight = weight
 
     def __repr__(self):
         return "<Neuron %s>" % self.data
 
     def go_next(self):
-        if self.data >= self.threshold:  # 역치값 비교 (역치값보다 데이터합이 작으면 다음 뉴런으로 전달하지 않음)
-            for next_neuron in self._next:  # 자신과 연결된 모든 뉴런에서
-                next_data = self.data * self._weight[next_neuron]  # 전달할 데이터 연산 (가중치 * 자신의 데이터)
+        next_data = self.data * self.weight  # 전달할 데이터 연산 (가중치 * 자신의 데이터)
 
-                if next_neuron.data:  # 전달할 뉴런의 데이터가 None 이 아니면
-                    next_neuron.data += next_data
-                else:  # None 일 경우, 전달 데이터로 초기화
-                    next_neuron.data = next_data
-        else:
-            pass
+        if self.next.data:  # 전달할 뉴런의 데이터가 None 이 아니면
+            self.next.data += next_data
+        else:  # None 일 경우, 전달 데이터로 초기화
+            self.next.data = next_data
+
+    @staticmethod
+    def learn(input_data, answer):
+        result = Neuron.get_result(input_data)
+        result_error = result - answer
+
+        for i in range(len(input_data)):
+            Neuron.error.append(result_error * input_data[i] * result * (1-result))
+
+    @staticmethod
+    def fix():
+        for input_neuron, error_weight in zip(InputNeuron.all_neuron, Neuron.error):
+            input_neuron.weight -= Neuron.alpha * error_weight
+
+        del Neuron.error[:]  # Clear Error list
+
+    @staticmethod
+    def get_result(init_data):
+        InputNeuron.set_init_data(init_data)  # 입력 뉴런에 데이터 설정
+        InputNeuron.work()  # 다음 뉴런으로 데이터 전달
+
+        return output_neuron.get_result()  # 결과 반환
 
 
 class InputNeuron(Neuron):
@@ -113,13 +131,6 @@ class OutputNeuron(Neuron):
         return "<OutputNeuron %s>" % self.name
 
 
-def get_result(init_data):
-    InputNeuron.set_init_data(init_data)  # 입력 뉴런에 데이터 설정
-    InputNeuron.work()  # 다음 뉴런으로 데이터 전달
-
-    return output_neuron.get_result()  # 결과 반환
-
-
 if __name__ == '__main__':
 
     # Make Neuron Object list
@@ -140,6 +151,28 @@ if __name__ == '__main__':
         [1, 1]
     ]
 
-    for data in inputdata:
-        result = get_result(data)
-        print(data, result)
+    answer_data = [0, 0, 0, 1]
+
+    #   Input Answer
+    #   0, 0    0
+    #   0, 1    0
+    #   1, 0    0
+    #   1, 1    1
+
+    # --> AND 연산
+
+    """
+        for data in inputdata:
+            result = Neuron.get_result(data)
+            print(data, result)
+    """
+
+    for i in range(5001):
+        for data, want_answer in zip(inputdata, answer_data):
+            Neuron.learn(data, want_answer)
+        Neuron.fix()
+
+        if not i % 100:
+            print("------%s Trained --------" % i)
+            for data in inputdata:
+                print(data, Neuron.get_result(data))
