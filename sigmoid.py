@@ -6,10 +6,13 @@ def sigmoid(x): return 1.0 / (1.0 + exp(-x))
 
 
 class Neuron:
-    def __init__(self, neuron_input):
+    def __init__(self, neuron_input=None):
         self.input = neuron_input
         self.alpha = 0.1
-        self.input_weight = [uniform(-1, 1) for _ in range(len(self.input) + 1)]
+        if neuron_input:
+            self.input_weight = [uniform(-1, 1) for _ in range(len(self.input) + 1)]
+        else:
+            self.input_weight = list()
         self.weight_error = list()
 
     def __repr__(self):
